@@ -5,6 +5,7 @@ use std::os::unix::net as unix_net;
 use std::{
     net::{Shutdown, SocketAddr, TcpListener, TcpStream, ToSocketAddrs},
     path::PathBuf,
+    str::FromStr,
 };
 
 /// Unified listener. Either a [`TcpListener`] or [`std::os::unix::net::UnixListener`]
@@ -120,7 +121,7 @@ pub enum ConfigListenAddr {
     IP(Vec<SocketAddr>),
     #[cfg(unix)]
     // TODO: use SocketAddr when bind_addr is stabilized
-    Unix(std::path::PathBuf),
+    Unix(PathBuf),
 }
 impl ConfigListenAddr {
     pub fn from_socket_addrs<A: ToSocketAddrs>(addrs: A) -> std::io::Result<Self> {
@@ -137,6 +138,26 @@ impl ConfigListenAddr {
             Self::IP(a) => TcpListener::bind(a.as_slice()).map(Listener::from),
             #[cfg(unix)]
             Self::Unix(a) => unix_net::UnixListener::bind(a).map(Listener::from),
+        }
+    }
+}
+
+impl FromStr for ConfigListenAddr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.starts_with("unix:") {
+            let path = s.splitn(2, ":").last().expect("CAN'T HAPPEN");
+            #[cfg(unix)]
+            {
+                Ok(ConfigListenAddr::Unix(path.into()))
+            }
+            #[cfg(not(unix))]
+            {
+                Err("Unix sockets not supported on this platform".to_string())
+            }
+        } else {
+            Ok(ConfigListenAddr::IP(s.to_socket_addrs().map_err(|e| format!("{e}"))?.collect()))
         }
     }
 }
