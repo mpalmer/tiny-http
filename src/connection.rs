@@ -176,6 +176,22 @@ impl ToConfigListenAddr for ConfigListenAddr {
     }
 }
 
+impl ToConfigListenAddr for &str {
+    type Err = String;
+
+    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err> {
+        self.parse()
+    }
+}
+
+impl ToConfigListenAddr for &String {
+    type Err = String;
+
+    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err> {
+        self.parse()
+    }
+}
+
 /// Unified listen socket address. Either a [`SocketAddr`] or [`std::os::unix::net::SocketAddr`].
 #[derive(Debug, Clone)]
 pub enum ListenAddr {
