@@ -162,6 +162,20 @@ impl FromStr for ConfigListenAddr {
     }
 }
 
+pub trait ToConfigListenAddr {
+    type Err;
+
+    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err> where Self: Sized;
+}
+
+impl ToConfigListenAddr for ConfigListenAddr {
+    type Err = ();
+
+    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err> {
+        Ok(self)
+    }
+}
+
 /// Unified listen socket address. Either a [`SocketAddr`] or [`std::os::unix::net::SocketAddr`].
 #[derive(Debug, Clone)]
 pub enum ListenAddr {
