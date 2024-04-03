@@ -157,7 +157,9 @@ impl FromStr for ConfigListenAddr {
                 Err("Unix sockets not supported on this platform".to_string())
             }
         } else {
-            Ok(ConfigListenAddr::IP(s.to_socket_addrs().map_err(|e| format!("{e}"))?.collect()))
+            Ok(ConfigListenAddr::IP(
+                s.to_socket_addrs().map_err(|e| format!("{e}"))?.collect(),
+            ))
         }
     }
 }
@@ -165,7 +167,9 @@ impl FromStr for ConfigListenAddr {
 pub trait ToConfigListenAddr {
     type Err;
 
-    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err> where Self: Sized;
+    fn to_config_listen_addr(self) -> Result<ConfigListenAddr, Self::Err>
+    where
+        Self: Sized;
 }
 
 impl ToConfigListenAddr for ConfigListenAddr {

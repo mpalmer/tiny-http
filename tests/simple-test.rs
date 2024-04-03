@@ -36,8 +36,11 @@ fn parse_v4_literal() {
     match addr {
         tiny_http::ConfigListenAddr::IP(v) => {
             assert_eq!(1, v.len());
-            assert_eq!(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), *v.first().unwrap());
-        },
+            assert_eq!(
+                SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080),
+                *v.first().unwrap()
+            );
+        }
         _ => panic!("Not an IP listener"),
     }
 }
@@ -49,8 +52,14 @@ fn parse_v6_literal() {
     match addr {
         tiny_http::ConfigListenAddr::IP(v) => {
             assert_eq!(1, v.len());
-            assert_eq!(SocketAddr::new(IpAddr::V6(Ipv6Addr::new(0x2001, 0xdb8, 0, 0, 0, 0, 0, 1)), 8080), *v.first().unwrap());
-        },
+            assert_eq!(
+                SocketAddr::new(
+                    IpAddr::V6(Ipv6Addr::new(0x2001, 0xdb8, 0, 0, 0, 0, 0, 1)),
+                    8080
+                ),
+                *v.first().unwrap()
+            );
+        }
         _ => panic!("Not an IP listener"),
     }
 }
